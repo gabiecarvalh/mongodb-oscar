@@ -1,0 +1,27 @@
+1.1 Quantos registros existem na coleção de indicados ao Oscar?
+r: use banco
+switched to db banco
+db.oscar_indicados.countDocuments();
+0
+db.OSTRA.countDocuments();
+10889
+Atlas atlas-r5bg5t-shard-0 [primary] banco>
+
+1.2 Quais são as diferentes categorias de premiação que existem no banco de dados? Liste todas as categorias únicas.
+r: Quantidade de categorias = 115
+
+1.3 Qual foi o primeiro ano de cerimônia do Oscar registrado na base?
+r: 1928
+
+1.4 Qual foi o último ano de cerimônia registrado na base?
+r: 2024
+
+db.oscar.find(
+
+  { ano_cerimonia: { $type: "number" } },
+
+  { ano_cerimonia: 1, _id: 0 }
+
+).sort({ ano_cerimonia: -1 }).limit(1)
+
+1.5 
