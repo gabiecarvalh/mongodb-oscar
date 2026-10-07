@@ -1,11 +1,6 @@
 1.1 Quantos registros existem na coleção de indicados ao Oscar?
-r: use banco
-switched to db banco
-db.oscar_indicados.countDocuments();
-0
-db.OSTRA.countDocuments();
-10889
-Atlas atlas-r5bg5t-shard-0 [primary] banco>
+r: 10889
+código utilizado: db.OSTRA.countDocuments()
 
 1.2 Quais são as diferentes categorias de premiação que existem no banco de dados? Liste todas as categorias únicas.
 r: Quantidade de categorias = 115
