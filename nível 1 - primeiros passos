@@ -1,22 +1,178 @@
+//////////////////////////
+NÍVEL 1 - PRIMEIROS PASSOS
+//////////////////////////
+
 1.1 Quantos registros existem na coleção de indicados ao Oscar?
 r: 10889
-código utilizado: db.OSTRA.countDocuments()
+código utilizado: db.OSCAR.countDocuments();
 
 1.2 Quais são as diferentes categorias de premiação que existem no banco de dados? Liste todas as categorias únicas.
 r: Quantidade de categorias = 115
+código utilizado: db.OSCAR.distinct("categoria").length;
 
 1.3 Qual foi o primeiro ano de cerimônia do Oscar registrado na base?
 r: 1928
+código utilizado: db.OSCAR.find(
+  { ano_cerimonia: { $type: "number" } },
+  { ano_cerimonia: 1, _id: 0 }
+).sort({ ano_cerimonia: 1 }).limit(1);
 
 1.4 Qual foi o último ano de cerimônia registrado na base?
 r: 2024
-
-db.oscar.find(
-
-  { ano_cerimonia: { $type: "number" } },
-
-  { ano_cerimonia: 1, _id: 0 }
-
+código utilizado: db.OSCAR.find(
+{ ano_cerimonia: { $type: "number" } },
+{ ano_cerimonia: 1, _id: 0 }
 ).sort({ ano_cerimonia: -1 }).limit(1)
 
-1.5 
+1.5 Quantas cerimônias do Oscar estão registradas no total?
+r: 96
+código utilizado: db.OSCAR.distinct("ano_cerimonia").length;
+
+1.6 Atualize os registros da coleção com os dados do Oscar 2025 e 2026 (pesquise os indicados e adicione-os).
+código utilizado: db.OSCAR.insertMany([
+    // dados dos indicados de 2025
+    // dados dos indicados de 2026
+]);
+
+///////////////////////////////
+NÍVEL 2 - EXPLORANDO CATEGORIAS
+///////////////////////////////
+
+2.1 Quantas indicações existem para cada categoria? Agrupe por categoria e ordene da mais frequente para a menos frequente.
+r: É possível obter essas informações no seguinte documento: 
+código atualizado:
+db.OSCAR.aggregatedb([
+  {
+    $group: {
+      _id: "$categoria",
+      quantidade: { $sum: 1 }
+    }
+  },
+  {
+    $sort: {
+      quantidade: -1
+    }
+  }
+])
+
+2.2 Qual categoria teve mais indicações ao longo da história do Oscar?
+r: Foi a categoria 'DIRECTING' com 479 indicações.
+código atualizado: obtive a resposta pela pergunta anterior.
+
+2.3 Qual categoria teve menos indicações ao longo da história?
+r: Foi a categoria Gordon E. Sawyer Award com 1 indicação.
+código atualizado: obtive a resposta pela pergunta anterior.
+
+2.4  A partir de que ano a categoria "ACTRESS" deixou de existir? (Dica: procure a última cerimônia com essa categoria)
+r: No banco de dados deixou de existir apartir de 1976, na vida real segue firme e forte.
+código utilizado: 
+db.OSCAR.find(
+  { categoria: "ACTRESS" },
+  { ano_cerimonia: 1, _id: 0 }
+).sort({ ano_cerimonia: -1 }).limit(1);
+
+2.5 Quais categorias existiam na primeira cerimônia (1928) e não existem mais hoje?
+r:'ART DIRECTION',
+  'DIRECTING (Comedy Picture)',
+  'DIRECTING (Dramatic Picture)',
+  'ENGINEERING EFFECTS',
+  'OUTSTANDING PICTURE',
+  'SPECIAL AWARD',
+  'UNIQUE AND ARTISTIC PICTURE',
+  'WRITING (Adaptation)',
+  'WRITING (Original Story)',
+  'WRITING (Title Writing)'
+código atualizado: 
+const categorias1928 = db.OSCAR.distinct("categoria", { ano_cerimonia: 1928 });
+const categorias2026 = db.OSCAR.distinct("categoria", { ano_cerimonia: 2026 });
+
+categorias1928.filter(categoria => !categorias2026.includes(categoria));
+
+2.6 Liste todas as categorias que contêm a palavra "DIRECTING" no nome.
+r:'DIRECTING',
+  'DIRECTING (Comedy Picture)',
+  'DIRECTING (Dramatic Picture)'
+código atualizado: 
+db.OSCAR.distinct("categoria", {
+  categoria: { $regex: "DIRECTING", $options: "i" }
+});
+
+//////////////////////////////////
+NÍVEL 3 - ATORES E ATRIZES FAMOSOS
+//////////////////////////////////
+
+3.1  Quantas vezes Natalie Portman foi indicada ao Oscar?
+r: 3
+código utilizado: db.OSCAR.countDocuments({
+  nome_do_indicado: "Natalie Portman"
+});
+
+3.2 Quantos Oscars Natalie Portman ganhou?
+r: 1
+código utilizado:
+db.OSCAR.find({
+  nome_do_indicado: "Natalie Portman",
+  vencedor: 1
+}).toArray().length
+
+3.3  Em quais anos e por quais filmes Natalie Portman foi indicada?
+r: Ela foi indicada em 2005, 2011 e 2017, pelos filmes Closer, Black Swan e Jackie.
+código utilizado:
+db.OSCAR.find(
+  { nome_do_indicado: "Natalie Portman" }
+).pretty()
+
+3.4 Liste todas as indicações de Natalie Portman mostrando: ano, categoria, filme e se venceu.
+r: ano_cerimonia: 2005
+categoria: 'ACTRESS IN A SUPPORTING ROLE'
+nome_do_filme: 'Closer'
+vencedor: 0
+
+ano_cerimonia: 2011
+categoria: 'ACTRESS IN A LEADING ROLE'
+nome_do_filme: 'Black Swan'
+vencedor: 1
+
+ano_cerimonia: 2017
+categoria: 'ACTRESS IN A LEADING ROLE'
+nome_do_filme: 'Jackie'
+vencedor: 0
+
+código utilizado:
+db.OSCAR.find(
+  { nome_do_indicado: "Natalie Portman" }
+).pretty()
+
+3.5 Quantas vezes Viola Davis foi indicada ao Oscar?
+r: 4
+código utilizado: db.OSCAR.countDocuments({
+  nome_do_indicado: "Viola Davis"
+});
+
+3.6
+r:
+código utilizado:
+
+3.7
+r:
+código utilizado:
+
+3.8
+r:
+código utilizado:
+
+3.9
+r:
+código utilizado:
+
+3.10
+r:
+código utilizado:
+
+3.11
+r:
+código utilizado:
+
+3.12
+r:
+código utilizado:
