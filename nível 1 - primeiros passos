@@ -215,24 +215,319 @@ NÍVEL 4 - VENCEDORES HISTÓRICOS
 ///////////////////////////////
 
 4.1 Quem ganhou o primeiro Oscar para Melhor Atriz (ACTRESS)? Em que ano e por qual filme?
-r:
-código utilizado:
+r: ano_cerimonia: 1928,
+   nome_do_indicado: 'Janet Gaynor',
+   nome_do_filme: '7th Heaven'
+código utilizado: db.OSCAR.find(
+  { categoria: "ACTRESS", vencedor: 1 },
+  {
+    nome_do_indicado: 1,
+    ano_cerimonia: 1,
+    nome_do_filme: 1,
+    _id: 0
+  }
+).sort({ ano_cerimonia: 1 }).limit(1)
 
 4.2 Quem ganhou o primeiro Oscar para Melhor Ator (ACTOR)? Em que ano e por qual filme?
-r:
-código utilizado:
+r: ano_cerimonia: 1928,
+   nome_do_indicado: 'Emil Jannings',
+   nome_do_filme: 'The Last Command'
+código utilizado: db.OSCAR.find(
+  { categoria: "ACTOR", vencedor: 1 },
+  {
+    nome_do_indicado: 1,
+    ano_cerimonia: 1,
+    nome_do_filme: 1,
+    _id: 0
+  }
+).sort({ ano_cerimonia: 1 }).limit(1)
 
 4.3 Quantos vencedores existem ao todo na base de dados?
-r:
-código utilizado:
+r: 2510
+código utilizado: db.OSCAR.countDocuments({ vencedor: 1 })
 
 4.4 Liste todos os filmes que ganharam o Oscar de Melhor Filme (categoria "OUTSTANDING PICTURE" ou "BEST PICTURE").
-r:
-código utilizado:
+r: ano_cerimonia: 1928,
+   categoria: 'OUTSTANDING PICTURE',
+   nome_do_filme: 'Wings'
+
+  ano_cerimonia: 1929,
+  categoria: 'OUTSTANDING PICTURE',
+  nome_do_filme: 'The Broadway Melody'
+
+  ano_cerimonia: 1963,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Lawrence of Arabia'
+
+  ano_cerimonia: 1964,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Tom Jones'
+
+  ano_cerimonia: 1965,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'My Fair Lady'
+
+  ano_cerimonia: 1966,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Sound of Music'
+
+  ano_cerimonia: 1967,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'A Man for All Seasons'
+
+  ano_cerimonia: 1968,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'In the Heat of the Night'
+
+  ano_cerimonia: 1969,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Oliver!'
+
+  ano_cerimonia: 1970,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Midnight Cowboy'
+
+  ano_cerimonia: 1971,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Patton'
+
+  ano_cerimonia: 1972,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The French Connection'
+
+  ano_cerimonia: 1973,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Godfather'
+
+  ano_cerimonia: 1974,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Sting'
+
+  ano_cerimonia: 1975,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Godfather Part II'
+
+  ano_cerimonia: 1976,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: "One Flew over the Cuckoo's Nest"
+
+  ano_cerimonia: 1977,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Rocky'
+
+  ano_cerimonia: 1978,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Annie Hall'
+
+  ano_cerimonia: 1979,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Deer Hunter'
+
+  ano_cerimonia: 1980,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Kramer vs. Kramer'
+
+  ano_cerimonia: 1981,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Ordinary People'
+
+  ano_cerimonia: 1982,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Chariots of Fire'
+
+  ano_cerimonia: 1983,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Gandhi'
+
+  ano_cerimonia: 1984,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Terms of Endearment'
+
+  ano_cerimonia: 1985,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Amadeus'
+
+  ano_cerimonia: 1986,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Out of Africa'
+
+  ano_cerimonia: 1987,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Platoon'
+
+  ano_cerimonia: 1988,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Last Emperor'
+
+  ano_cerimonia: 1989,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Rain Man'
+
+  ano_cerimonia: 1990,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Driving Miss Daisy'
+
+  ano_cerimonia: 1991,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Dances With Wolves'
+
+  ano_cerimonia: 1992,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Silence of the Lambs'
+
+  ano_cerimonia: 1993,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Unforgiven'
+
+  ano_cerimonia: 1994,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: "Schindler's List"
+
+  ano_cerimonia: 1995,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Forrest Gump'
+
+  ano_cerimonia: 1996,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Braveheart'
+
+  ano_cerimonia: 1997,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The English Patient'
+
+  ano_cerimonia: 1998,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Titanic'
+
+  ano_cerimonia: 1999,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Shakespeare in Love'
+
+  ano_cerimonia: 2000,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'American Beauty'
+
+  ano_cerimonia: 2001,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Gladiator'
+
+  ano_cerimonia: 2002,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'A Beautiful Mind'
+
+  ano_cerimonia: 2003,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Chicago'
+
+  ano_cerimonia: 2004,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Lord of the Rings: The Return of the King'
+
+  ano_cerimonia: 2005,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Million Dollar Baby'
+
+  ano_cerimonia: 2006,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Crash'
+
+  ano_cerimonia: 2007,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Departed'
+
+  ano_cerimonia: 2008,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'No Country for Old Men'
+
+  ano_cerimonia: 2009,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Slumdog Millionaire'
+
+  ano_cerimonia: 2010,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Hurt Locker'
+
+  ano_cerimonia: 2011,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: "The King's Speech"
+
+  ano_cerimonia: 2012,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Artist'
+
+  ano_cerimonia: 2013,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Argo'
+
+  ano_cerimonia: 2014,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: '12 Years a Slave'
+
+  ano_cerimonia: 2015,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Birdman or (The Unexpected Virtue of Ignorance)'
+
+  ano_cerimonia: 2016,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Spotlight'
+
+  ano_cerimonia: 2017,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Moonlight'
+
+  ano_cerimonia: 2018,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'The Shape of Water'
+
+  ano_cerimonia: 2019,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Green Book'
+
+  ano_cerimonia: 2020,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Parasite'
+
+  ano_cerimonia: 2021,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Nomadland'
+
+  ano_cerimonia: 2022,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'CODA'
+
+  ano_cerimonia: 2023,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Everything Everywhere All at Once'
+
+  ano_cerimonia: 2024,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Oppenheimer'
+
+  ano_cerimonia: 2025,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'Anora'
+
+  ano_cerimonia: 2026,
+  categoria: 'BEST PICTURE',
+  nome_do_filme: 'One Battle after Another'
+código utilizado: db.OSCAR.find(
+  {
+    categoria: {
+      $in: ["OUTSTANDING PICTURE", "BEST PICTURE"]
+    },
+    vencedor: 1
+  },
+  {
+    nome_do_filme: 1,
+    ano_cerimonia: 1,
+    categoria: 1,
+    _id: 0
+  }
+).sort({ ano_cerimonia: 1 })
 
 4.5 Quantos filmes diferentes já ganharam o Oscar?
-r:
-código utilizado:
+r: 1355
+código utilizado: db.OSCAR.distinct("nome_do_filme", { vencedor: 1 }).length
 
 ///////////////////////////////
 NÍVEL 5 - ANÁLISE DE INDICAÇÕES
