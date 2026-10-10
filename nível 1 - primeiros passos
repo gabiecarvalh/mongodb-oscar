@@ -534,28 +534,173 @@ NÍVEL 5 - ANÁLISE DE INDICAÇÕES
 ///////////////////////////////
 
 5.1 Quais atores/atrizes foram indicados mais de uma vez? Liste o nome e o número de indicações.
-r:
-código utilizado: 
+r: resposta é encontrada ao executar o código.
+código:
+db.OSCAR.aggregate([
+  {
+    // 1. Filtra os documentos APENAS para categorias de atuação (atores e atrizes)
+    $match: {
+      categoria: { $regex: "ACTOR|ACTRESS", $options: "i" }
+    }
+  },
+  {
+    // 2. Agrupa pelos nomes dos artistas filtrados e conta as indicações
+    $group: {
+      _id: "$nome_do_indicado",
+      totalIndicacoes: { $sum: 1 }
+    }
+  },
+  {
+    // 3. Filtra apenas os que possuem mais de 1 indicação
+    $match: {
+      totalIndicacoes: { $gt: 1 }
+    }
+  },
+  {
+    // 4. Ordena do maior para o menor número de indicações
+    $sort: {
+      totalIndicacoes: -1
+    }
+  }
+]);
+
 
 5.2 Qual ator ou atriz tem o maior número de indicações na história do Oscar?
-r:
-código utilizado: 
+r: _id: 'Meryl Streep',
+   totalIndicacoes: 21
+código:
+db.OSCAR.aggregate([
+  {
+    // 1. Filtra os documentos APENAS para categorias de atuação
+    $match: {
+      categoria: { $regex: "ACTOR|ACTRESS", $options: "i" }
+    }
+  },
+  {
+    // 2. Agrupa pelo campo exato do nome do artista e conta as indicações
+    $group: {
+      _id: "$nome_do_indicado",
+      totalIndicacoes: { $sum: 1 }
+    }
+  },
+  {
+    // 3. Ordena do maior para o menor número de indicações
+    $sort: {
+      totalIndicacoes: -1
+    }
+  },
+  {
+    // 4. Limita o resultado para mostrar apenas o 1º colocado
+    $limit: 1
+  }
+]);
 
 5.3 Quais atores foram indicados mais de 3 vezes, mas nunca ganharam?
-r:
-código utilizado: 
+r: resposta é encontrada ao executar o código.
+código: 
+db.OSCAR.aggregate([
+  {
+    // 1. Filtra apenas as categorias de atuação
+    $match: {
+      categoria: { $regex: "ACTOR|ACTRESS", $options: "i" }
+    }
+  },
+  {
+    // 2. Agrupa pelo nome do artista
+    $group: {
+      _id: "$nome_do_indicado",
+      totalIndicacoes: { $sum: 1 },
+      // O $push guarda todos os resultados ("true", "false", "True", etc) desse ator em um array
+      statusVitorias: { $push: "$vencedor" }
+    }
+  },
+  {
+    // 3. Filtra apenas os "azarões" com mais de 3 indicações E que NUNCA ganharam
+    $match: {
+      totalIndicacoes: { $gt: 3 },
+      // O $nin (Not In) garante que NENHUM desses valores de vitória exista na lista do ator
+      statusVitorias: { $nin: [true, "true", "True", "TRUE", "1", 1] }
+    }
+  },
+  {
+    // 4. (Opcional) Ocultamos o array de status para deixar a resposta limpa e elegante
+    $project: {
+      totalIndicacoes: 1
+    }
+  },
+  {
+    // 5. Ordena do maior azarão para o menor
+    $sort: {
+      totalIndicacoes: -1
+    }
+  }
+]);
 
 5.4 Encontre todos os artistas que foram indicados em categorias diferentes (ex: ator e diretor).
-r:
-código utilizado: 
+r: resposta encontrada ao executar o código.
+código:
+db.OSCAR.aggregate([
+  {
+    // 1. Agrupa pelo nome do artista e guarda as categorias únicas
+    $group: {
+      _id: "$nome_do_indicado",
+      categorias_unicas: { $addToSet: "$categoria" }
+    }
+  },
+  {
+    // 2. Filtra os agrupamentos para manter apenas quem tem 2 ou mais categorias
+    $match: {
+      "categorias_unicas.1": { $exists: true }
+    }
+  }
+]);
 
 5.5 Quantos indicados têm exatamente 1 indicação na história?
-r:
-código utilizado: 
+r: 5734
+código:
+db.OSCAR.aggregate([
+  {
+    // 1. Agrupa pelo nome do indicado e conta o total de aparições
+    $group: {
+      _id: "$nome_do_indicado",
+      totalIndicacoes: { $sum: 1 }
+    }
+  },
+  {
+    // 2. Filtra os agrupamentos mantendo apenas quem tem exatamente 1 indicação
+    $match: {
+      totalIndicacoes: 1
+    }
+  },
+  {
+    // 3. Conta o total de registros (pessoas) que sobraram após o filtro
+    $count: "total_indicados_apenas_uma_vez"
+  }
+])
 
 5.6 Qual o maior números de indicados em um único ano? Essa é uma pergunta franca.
-r:
-código utilizado: 
+r: _id: 1943,
+   totalIndicacoesAno: 186
+código: 
+db.OSCAR.aggregate([
+  {
+    // 1. Agrupa pelo ano da cerimônia e conta as indicações daquele ano
+    $group: {
+      _id: "$ano_cerimonia",
+      totalIndicacoesAno: { $sum: 1 }
+    }
+  },
+  {
+    // 2. Ordena do ano com mais indicações para o de menos indicações
+    $sort: {
+      totalIndicacoesAno: -1
+    }
+  },
+  {
+    // 3. Limita a lista para mostrar estritamente o 1º colocado
+    $limit: 1
+  }
+]);
 
 ///////////////////////////
 NÍVEL 6 - ANÁLISE DE FILMES
@@ -563,59 +708,229 @@ NÍVEL 6 - ANÁLISE DE FILMES
 
 Toy Story
 6.1 A série de filmes Toy Story ganhou Oscars em quais anos?
-r: 
-código utilizado: 
+r: 2011 e 2020
+código: 
+db.OSCAR.distinct("ano_cerimonia", {
+  nome_do_filme: { $regex: "Toy Story", $options: "i" },
+  vencedor: { $in: [true, "true", "True", "TRUE", "1", 1, "Yes", "YES", "yes"] }
+});
 
 6.2 Quantas indicações a franquia Toy Story recebeu no total?
-r: 
-código utilizado: 
+r: 11
+código: 
+db.OSCAR.countDocuments({
+  nome_do_filme: { $regex: "Toy Story", $options: "i" }
+});
 
 6.3 Em quais categorias os filmes Toy Story foram indicados?
-r: 
-código utilizado: 
+r:'ANIMATED FEATURE FILM',
+  'BEST PICTURE',
+  'MUSIC (Original Musical or Comedy Score)',
+  'MUSIC (Original Song)',
+  'SOUND EDITING',
+  'WRITING (Adapted Screenplay)',
+  'WRITING (Screenplay Written Directly for the Screen)'
+código: 
+db.OSCAR.distinct("categoria", {
+  nome_do_filme: { $regex: "Toy Story", $options: "i" }
+});
 
 Crash
 6.4 Em qual edição do Oscar o filme "Crash" concorreu?
-r: 
-código utilizado: 
+r: 2006
+código: 
+db.OSCAR.distinct("ano_cerimonia", {
+  nome_do_filme: { $regex: "^Crash$", $options: "i" }
+})
 
 6.5 Quantas indicações o filme "Crash" recebeu?
-r: 
-código utilizado: 
+r: 6
+código: 
+db.OSCAR.countDocuments({
+  nome_do_filme: { $regex: "^Crash$", $options: "i" }
+});
 
 6.6 "Crash" ganhou o Oscar de Melhor Filme?
-r: 
-código utilizado: 
+r: sim.
+
+código: 
+db.OSCAR.find({
+  // 1. Busca exatamente pelo filme "Crash"
+  nome_do_filme: { $regex: "^Crash$", $options: "i" },
+  
+  // 2. Filtra pelas nomenclaturas históricas da categoria de Melhor Filme
+  categoria: { $regex: "BEST PICTURE|OUTSTANDING PICTURE", $options: "i" },
+  
+  // 3. Garante que estamos filtrando apenas as vitórias
+  vencedor: { $in: [true, "true", "True", "TRUE", "1", 1, "Yes", "YES", "yes"] }
+})
 
 Central do Brasil
 6.7 O filme "Central do Brasil" aparece no banco de dados?
-r: 
-código utilizado: 
+r: sim.
+
+código: 
+db.OSCAR.countDocuments({
+  nome_do_filme: { $regex: "Central do Brasil|Central Station", $options: "i" }
+});
 
 6.8 Se sim, quantas indicações "Central do Brasil" recebeu?
-r: 
-código utilizado: 
+r: 2
+
+código: 
+db.OSCAR.countDocuments({
+  nome_do_filme: { $regex: "Central do Brasil|Central Station", $options: "i" }
+});
 
 //////////////////////////////////
 NÍVEL 7 - OPERAÇÕES DE ATUALIZAÇÃO
 //////////////////////////////////
 
 7.1 No campo "vencedor", altere todos os valores "true" (string) para true (booleano) e "false" (string) para false (booleano).
-r:
-código utilizado: 
+r: feito.
+
+código: 
+// 1. Converte todos os textos "true" para o valor booleano verdadeiro
+db.OSCAR.updateMany(
+  { vencedor: "true" },
+  { $set: { vencedor: true } }
+);
+
+// 2. Converte todos os textos "false" para o valor booleano falso
+db.OSCAR.updateMany(
+  { vencedor: "false" },
+  { $set: { vencedor: false } }
+);
 
 7.2 Inclua no banco 3 filmes que nunca foram nomeados ao Oscar, mas que você acha que merecem. Use dados fictícios mas realistas.
-r:
-código utilizado:
+r:feito.
+
+código:
+db.OSCAR.insertMany([
+  {
+    id_registro: 15001,
+    ano_filmagem: 1995,
+    ano_cerimonia: 1996,
+    cerimonia: 68,
+    categoria: "ACTOR IN A LEADING ROLE",
+    nome_do_indicado: "Patrick Swayze",
+    nome_do_filme: "Para Wong Foo, Obrigada por Tudo! Julie Newmar",
+    vencedor: 0
+  },
+  {
+    id_registro: 15002,
+    ano_filmagem: 1988,
+    ano_cerimonia: 1989,
+    cerimonia: 61,
+    categoria: "ACTRESS IN A LEADING ROLE",
+    nome_do_indicado: "Cassandra Peterson",
+    nome_do_filme: "Elvira: A Rainha das Trevas",
+    vencedor: 0
+  },
+  {
+    id_registro: 15003,
+    ano_filmagem: 2006,
+    ano_cerimonia: 2007,
+    cerimonia: 79,
+    categoria: "VISUAL EFFECTS",
+    nome_do_indicado: "James Wong",
+    nome_do_filme: "Premonição 3",
+    vencedor: 0
+  }
+]);
 
 7.3 Adicione uma nova categoria chamada "BEST INTERNATIONAL FEATURE FILM" com alguns vencedores recentes (2020-2024).
-r:
-código utilizado:
+r: feito.
+
+código:
+db.OSCAR.insertMany([
+  {
+    id_registro: 16001,
+    ano_filmagem: 2019,
+    ano_cerimonia: 2020,
+    cerimonia: 92,
+    categoria: "BEST INTERNATIONAL FEATURE FILM",
+    nome_do_indicado: "South Korea",
+    nome_do_filme: "Parasite",
+    vencedor: 1
+  },
+  {
+    id_registro: 16002,
+    ano_filmagem: 2020,
+    ano_cerimonia: 2021,
+    cerimonia: 93,
+    categoria: "BEST INTERNATIONAL FEATURE FILM",
+    nome_do_indicado: "Denmark",
+    nome_do_filme: "Another Round",
+    vencedor: 1
+  },
+  {
+    id_registro: 16003,
+    ano_filmagem: 2021,
+    ano_cerimonia: 2022,
+    cerimonia: 94,
+    categoria: "BEST INTERNATIONAL FEATURE FILM",
+    nome_do_indicado: "Japan",
+    nome_do_filme: "Drive My Car",
+    vencedor: 1
+  },
+  {
+    id_registro: 16004,
+    ano_filmagem: 2022,
+    ano_cerimonia: 2023,
+    cerimonia: 95,
+    categoria: "BEST INTERNATIONAL FEATURE FILM",
+    nome_do_indicado: "Germany",
+    nome_do_filme: "All Quiet on the Western Front",
+    vencedor: 1
+  },
+  {
+    id_registro: 16005,
+    ano_filmagem: 2023,
+    ano_cerimonia: 2024,
+    cerimonia: 96,
+    categoria: "BEST INTERNATIONAL FEATURE FILM",
+    nome_do_indicado: "United Kingdom",
+    nome_do_filme: "The Zone of Interest",
+    vencedor: 1
+  }
+]);
 
 7.4 Corrija possíveis erros de digitação nos nomes dos filmes (ex: espaços extras, caracteres especiais desnecessários).
-r:
-código utilizado:
+r: feito.
+
+código:
+db.OSCAR.updateMany(
+  // 1. Filtro: Aplica a atualização apenas em documentos onde o campo seja texto
+  { nome_do_filme: { $type: "string" } },
+  
+  // 2. Pipeline de atualização (delimitado por colchetes)
+  [
+    {
+      $set: {
+        // Remove espaços acidentais no início e no fim do nome do filme
+        nome_do_filme: { $trim: { input: "$nome_do_filme" } }
+      }
+    },
+    {
+      $set: {
+        // Substitui espaços duplos no meio do texto por um único espaço
+        nome_do_filme: { 
+          $replaceAll: { 
+            input: "$nome_do_filme", 
+            find: "  ", 
+            replacement: " " 
+          } 
+        }
+      }
+    }
+  ]
+);
 
 7.5 Remova todos os registros com valor NULL no campo nome_do_filme.
-r:
-código utilizado:
+r: feito.
+
+código:
+db.OSCAR.deleteMany({
+  nome_do_filme: null
+});
